@@ -15,6 +15,20 @@ Globals:
   Api:
     TracingEnabled: true
 
+HttpApi:
+  Auth:
+    DefaultAuthorizer:
+      ApiKeyRequired: true
+  CorsConfiguration: 
+    AllowOrigins:
+      - "*"
+    AllowHeaders:
+      - "*"
+    AllowMethods:
+      - GET
+      - POST
+      - OPTIONS
+
 Resources:
   GeoNormApiFunction:
     Type: AWS::Serverless::Function
@@ -30,10 +44,6 @@ Resources:
           Properties:
             PayloadFormatVersion: "2.0"
             TimeoutInMillis: 15000
-            Auth:
-              Authorizers:
-                ApiKeyAuthorizer:
-                  ApiKeyRequired: true
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: GeoNormAPI

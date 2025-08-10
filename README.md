@@ -17,3 +17,9 @@ GeoNorm es un API  de tipo "Datos como Servicio" (DaaS) diseñada para resolver 
     Usa sam local start-api.
 
     Esto te permite verificar que tu aplicación funciona correctamente dentro del contexto de simulación de Lambda, aunque no puedas ver los docs.
+
+-Para testear: ejecutar pytest en el directorio root
+
+-Para construir el paquete de despliegue: sam build --use-container
+
+-Para desplegar: sam deploy
