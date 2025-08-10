@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: GeoNorm API
+  description: |-
+    API para la estandarización, validación y enriquecimiento de direcciones postales.
+    Este contrato define todos los endpoints disponibles y sus modelos de datos.
+  version: "1.0.0"
+  contact:
+    name: Soporte de GeoNorm
+    url: https://geonorm.com/support
+    email: support@geonorm.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://api.geonorm.com/v1
+    description: Servidor de Producción
+  - url: https://staging-api.geonorm.com/v1
+    description: Servidor de Pruebas (Staging)
+
+tags:
+  - name: Normalización de Direcciones
+    description: Endpoints relacionados con el procesamiento de direcciones.
+
+paths:
+  /normalize:
+    post:
+      tags:
+        - Normalización de Direcciones
+      summary: Normaliza una única dirección
+      description: Recibe una cadena de texto y la devuelve en un formato JSON estructurado y validado.
+      operationId: normalizeAddress # Útil para generadores de código
+      requestBody:
+        $ref: '#/components/requestBodies/AddressNormalizationRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/AddressNormalizationSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - ApiKeyAuth: []
+
+components:
+  # == ESQUEMAS REUTILIZABLES ==
+  schemas:
+    AddressRequest:
+      type: object
+      properties:
+        address_string:
+          type: string
+          description: La dirección no estructurada a procesar.
+          example: "carrera 4 # 10-20, apto 301, Bogota"
+      required:
+        - address_string
+
+    AddressResponse:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+          description: Indica si la dirección pudo ser validada contra una fuente fiable.
+        confidenceScore:
+          type: number
+          format: float
+          description: Puntuación de 0.0 a 1.0 que indica la confianza en el resultado.
+        normalizedAddress:
+          type: object
+          properties:
+            fullAddress: { type: string }
+            # ... y todos los demás campos de la dirección normalizada
+        geolocation:
+          type: object
+          properties:
+            latitude: { type: number, format: float }
+            longitude: { type: number, format: float }
+
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+
+  # == RESPUESTAS REUTILIZABLES ==
+  responses:
+    AddressNormalizationSuccess:
+      description: Dirección procesada exitosamente.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddressResponse'
+    BadRequest:
+      description: La petición está mal formada o le faltan datos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: La clave de API (X-API-Key) falta o es inválida.
+    InternalServerError:
+      description: Ocurrió un error inesperado en el servidor.
+
+  # == CUERPOS DE PETICIÓN REUTILIZABLES ==
+  requestBodies:
+    AddressNormalizationRequest:
+      description: Cuerpo de la petición para normalizar una dirección.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddressRequest'
+
+  # == ESQUEMAS DE SEGURIDAD ==
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key # Nombre estándar para la cabecera de la clave de API
