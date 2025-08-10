@@ -24,6 +24,34 @@ tags:
     description: Endpoints que realizan funciones de normalización y enriquecimiento.
 
 paths:
+
+  # === ENDPOINTS DE DOCUMENTACIÓN (SIN SEGURIDAD) ===
+  /docs:
+    get:
+      tags: [Documentación]
+      summary: Documentación Interactiva (Swagger UI)
+      description: Devuelve la documentación autogenerada e interactiva de la API.
+      operationId: getSwaggerDocs
+      security: []
+      responses:
+        '200':
+          description: Página HTML de la documentación Swagger UI.
+          content:
+            text/html: {}
+
+  /redoc:
+    get:
+      tags: [Documentación]
+      summary: Documentación Alternativa (ReDoc)
+      description: Devuelve una vista alternativa de la documentación de la API.
+      operationId: getReDoc
+      security: []
+      responses:
+        '200':
+          description: Página HTML de la documentación ReDoc.
+          content:
+            text/html: {}
+
   /normalize:
     post:
       tags: [Endpoints de Procesamiento de Direcciones]

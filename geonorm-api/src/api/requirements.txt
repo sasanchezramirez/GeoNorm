@@ -2,4 +2,3 @@ requests
 aws-lambda-powertools[tracer]
 fastapi
 mangum
-aws-lambda-powertools
