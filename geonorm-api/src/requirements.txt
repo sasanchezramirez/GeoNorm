@@ -1,2 +1,4 @@
 requests
 aws-lambda-powertools[tracer]
+fastapi
+mangum

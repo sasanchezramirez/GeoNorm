@@ -1,0 +1,222 @@
+openapi: 3.1.1
+info:
+  title: GeoNorm API
+  description: |-
+    API para la estandarización, validación y enriquecimiento de direcciones postales.
+    Este contrato define todos los endpoints disponibles y sus modelos de datos.
+  version: "1.0.0"
+  contact:
+    name: Soporte de GeoNorm
+    url: https://geonorm.com/support
+    email: support@geonorm.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://api.geonorm.com/v1
+    description: Servidor de Producción
+  - url: https://staging-api.geonorm.com/v1
+    description: Servidor de Pruebas (Staging)
+
+tags:
+  - name: Endpoints de Procesamiento de Direcciones
+    description: Endpoints que realizan funciones de normalización y enriquecimiento.
+
+paths:
+
+  # === ENDPOINTS DE DOCUMENTACIÓN (SIN SEGURIDAD) ===
+  /docs:
+    get:
+      tags: [Documentación]
+      summary: Documentación Interactiva (Swagger UI)
+      description: Devuelve la documentación autogenerada e interactiva de la API.
+      operationId: getSwaggerDocs
+      security: []
+      responses:
+        '200':
+          description: Página HTML de la documentación Swagger UI.
+          content:
+            text/html: {}
+
+  /redoc:
+    get:
+      tags: [Documentación]
+      summary: Documentación Alternativa (ReDoc)
+      description: Devuelve una vista alternativa de la documentación de la API.
+      operationId: getReDoc
+      security: []
+      responses:
+        '200':
+          description: Página HTML de la documentación ReDoc.
+          content:
+            text/html: {}
+
+  /normalize:
+    post:
+      tags: [Endpoints de Procesamiento de Direcciones]
+      summary: Devuelve solo la dirección normalizada
+      description: Recibe una dirección y devuelve únicamente la cadena de texto estandarizada. Es el endpoint más básico.
+      operationId: getNormalizedString
+      requestBody:
+        $ref: '#/components/requestBodies/AddressRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/NormalizedStringSuccess'
+        '400': { $ref: '#/components/responses/BadRequest' }
+      security:
+        - ApiKeyAuth: []
+
+  /confidence:
+    post:
+      tags: [Endpoints de Procesamiento de Direcciones]
+      summary: Devuelve la normalización y el puntaje de confianza
+      description: Analiza una dirección y devuelve la cadena normalizada junto con un puntaje de confianza.
+      operationId: getConfidenceScore
+      requestBody:
+        $ref: '#/components/requestBodies/AddressRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/ConfidenceScoreSuccess'
+        '400': { $ref: '#/components/responses/BadRequest' }
+      security:
+        - ApiKeyAuth: []
+
+  /geolocate:
+    post:
+      tags: [Endpoints de Procesamiento de Direcciones]
+      summary: Devuelve la normalización y la geolocalización
+      description: Recibe una dirección y devuelve la cadena normalizada junto con sus coordenadas.
+      operationId: getGeolocation
+      requestBody:
+        $ref: '#/components/requestBodies/AddressRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/GeolocationSuccess'
+        '400': { $ref: '#/components/responses/BadRequest' }
+      security:
+        - ApiKeyAuth: []
+
+  /validate-full:
+    post:
+      tags: [Endpoints de Procesamiento de Direcciones]
+      summary: Realiza una validación completa y enriquecida
+      description: Procesa una dirección y devuelve un objeto completo con todos los datos disponibles.
+      operationId: getFullValidation
+      requestBody:
+        $ref: '#/components/requestBodies/AddressRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/FullValidationSuccess'
+        '400': { $ref: '#/components/responses/BadRequest' }
+      security:
+        - ApiKeyAuth: []
+
+components:
+  # == ESQUEMAS REUTILIZABLES ==
+  schemas:
+    AddressRequest:
+      type: object
+      properties:
+        address_string:
+          type: string
+          description: La dirección no estructurada a procesar.
+          example: "carrera 4 # 10-20, apto 301, Bogota"
+      required:
+        - address_string
+    
+    # Schemas para las respuestas progresivas
+    NormalizedStringResponse:
+      type: object
+      required: [normalizedString]
+      properties:
+        normalizedString:
+          type: string
+          example: "Carrera 4 # 10 - 20, Apto 301, Bogotá, D.C."
+    
+    ConfidenceScoreResponse:
+      type: object
+      required: [normalizedString, confidenceScore]
+      properties:
+        normalizedString:
+          type: string
+          example: "Carrera 4 # 10 - 20, Apto 301, Bogotá, D.C."
+        confidenceScore:
+          type: number
+          format: float
+          example: 0.95
+    
+    GeolocationResponse:
+      type: object
+      required: [normalizedString, latitude, longitude]
+      properties:
+        normalizedString:
+          type: string
+          example: "Carrera 4 # 10 - 20, Apto 301, Bogotá, D.C."
+        latitude:
+          type: number
+          format: float
+          example: 4.60971
+        longitude:
+          type: number
+          format: float
+          example: -74.08175
+          
+    FullValidationResponse:
+      type: object
+      properties:
+        isValid: { type: boolean }
+        confidenceScore: { type: number, format: float }
+        normalizedAddress: { type: object }
+        geolocation:
+          type: object
+          properties:
+            latitude: { type: number, format: float }
+            longitude: { type: number, format: float }
+        # ... otros campos enriquecidos
+
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode: { type: string }
+        errorMessage: { type: string }
+
+  # == RESPUESTAS REUTILIZABLES ==
+  responses:
+    NormalizedStringSuccess:
+      description: Cadena de texto de la dirección normalizada.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/NormalizedStringResponse' } }
+    ConfidenceScoreSuccess:
+      description: Dirección normalizada y su puntaje de confianza.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ConfidenceScoreResponse' } }
+    GeolocationSuccess:
+      description: Dirección normalizada y sus coordenadas geográficas.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/GeolocationResponse' } }
+    FullValidationSuccess:
+      description: Objeto de validación completo y enriquecido.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/FullValidationResponse' } }
+    BadRequest:
+      description: La petición está mal formada.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }
+
+  # == CUERPOS DE PETICIÓN REUTILIZABLES ==
+  requestBodies:
+    AddressRequest:
+      description: Cuerpo de la petición para procesar una dirección.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddressRequest'
+
+  # == ESQUEMAS DE SEGURIDAD ==
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
