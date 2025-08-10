@@ -6,30 +6,29 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 15 
-    MemorySize: 256 
+    Timeout: 15
+    MemorySize: 256
     Runtime: python3.12
     Tracing: Active
     LoggingConfig:
       LogFormat: JSON
-  Api:
-    TracingEnabled: true
-
-HttpApi:
-  Auth:
-    DefaultAuthorizer:
-      ApiKeyRequired: true
-  CorsConfiguration: 
-    AllowOrigins:
-      - "*"
-    AllowHeaders:
-      - "*"
-    AllowMethods:
-      - GET
-      - POST
-      - OPTIONS
 
 Resources:
+  # --- 1. SE CREA UN RECURSO EXPLÍCITO PARA LA API ---
+  # En lugar de una configuración global, definimos la API como su propio recurso.
+  GeoNormHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      # Aquí van las configuraciones que antes estaban en el bloque global.
+      Auth:
+        DefaultAuthorizer:
+          ApiKeyRequired: true
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowHeaders: ["*"]
+        AllowMethods: ["GET", "POST", "OPTIONS"]
+
+  # --- 2. LA FUNCIÓN LAMBDA SE MANTIENE, PERO SU EVENTO CAMBIA ---
   GeoNormApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -39,11 +38,16 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        ApiProxy:
-          Type: HttpApi 
+        # --- 3. EL EVENTO AHORA SE VINCULA A LA API EXPLÍCITA ---
+        # En lugar de definir un proxy genérico, le decimos que responda a cualquier
+        # petición en la API que creamos arriba ('GeoNormHttpApi').
+        ApiEvent:
+          Type: HttpApi
           Properties:
-            PayloadFormatVersion: "2.0"
-            TimeoutInMillis: 15000
+            Path: /{proxy+} # Un "catch-all" para que FastAPI maneje las rutas
+            Method: ANY
+            ApiId: !Ref GeoNormHttpApi # ¡Este es el vínculo clave!
+
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: GeoNormAPI
@@ -54,10 +58,10 @@ Resources:
         Service: CoreAPI
 
 Outputs:
-
+  # --- 4. LA SALIDA AHORA TOMA LA URL DIRECTAMENTE DEL RECURSO DE LA API ---
   GeoNormApiEndpoint:
     Description: "URL del API Gateway para el entorno de producción"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value: !GetAtt GeoNormHttpApi.ApiEndpoint
 
   GeoNormApiFunctionArn:
     Description: "ARN de la función Lambda principal"
