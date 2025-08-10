@@ -14,21 +14,6 @@ Globals:
       LogFormat: JSON
 
 Resources:
-  # --- 1. SE CREA UN RECURSO EXPLÍCITO PARA LA API ---
-  # En lugar de una configuración global, definimos la API como su propio recurso.
-  GeoNormHttpApi:
-    Type: AWS::Serverless::HttpApi
-    Properties:
-      # Aquí van las configuraciones que antes estaban en el bloque global.
-      Auth:
-        DefaultAuthorizer:
-          ApiKeyRequired: true
-      CorsConfiguration:
-        AllowOrigins: ["*"]
-        AllowHeaders: ["*"]
-        AllowMethods: ["GET", "POST", "OPTIONS"]
-
-  # --- 2. LA FUNCIÓN LAMBDA SE MANTIENE, PERO SU EVENTO CAMBIA ---
   GeoNormApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -38,15 +23,13 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        # --- 3. EL EVENTO AHORA SE VINCULA A LA API EXPLÍCITA ---
-        # En lugar de definir un proxy genérico, le decimos que responda a cualquier
-        # petición en la API que creamos arriba ('GeoNormHttpApi').
         ApiEvent:
-          Type: HttpApi
+          Type: Api 
           Properties:
-            Path: /{proxy+} # Un "catch-all" para que FastAPI maneje las rutas
+            Path: /{proxy+} 
             Method: ANY
-            ApiId: !Ref GeoNormHttpApi # ¡Este es el vínculo clave!
+            Auth:
+              ApiKeyRequired: true
 
       Environment:
         Variables:
@@ -58,10 +41,9 @@ Resources:
         Service: CoreAPI
 
 Outputs:
-  # --- 4. LA SALIDA AHORA TOMA LA URL DIRECTAMENTE DEL RECURSO DE LA API ---
   GeoNormApiEndpoint:
     Description: "URL del API Gateway para el entorno de producción"
-    Value: !GetAtt GeoNormHttpApi.ApiEndpoint
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
 
   GeoNormApiFunctionArn:
     Description: "ARN de la función Lambda principal"

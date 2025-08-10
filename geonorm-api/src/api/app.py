@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter
 from mangum import Mangum
 from aws_lambda_powertools import Logger
 
-from src.api.models import AddressRequest, NormalizedStringResponse
+from api.models import AddressRequest, NormalizedStringResponse
 
 logger = Logger()
 
