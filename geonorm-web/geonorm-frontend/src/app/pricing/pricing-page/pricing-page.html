@@ -1,1 +1,188 @@
-<p>pricing-page works!</p>
+<!-- Hero Section -->
+<section class="pricing-hero bg-gradient-to-br from-indigo-50 to-blue-100 py-16 px-4">
+  <div class="max-w-4xl mx-auto text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      Planes Diseñados para tu 
+      <span class="text-blue-600">Crecimiento</span>
+    </h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+      Desde desarrollo hasta producción empresarial, tenemos el plan perfecto para tu proyecto.
+    </p>
+    <div class="flex justify-center items-center gap-4 text-sm text-gray-600">
+      <mat-icon class="text-green-500">check_circle</mat-icon>
+      <span>Sin contratos anuales</span>
+      <mat-icon class="text-green-500">check_circle</mat-icon>
+      <span>Cancela cuando quieras</span>
+      <mat-icon class="text-green-500">check_circle</mat-icon>
+      <span>API Key instantánea</span>
+    </div>
+  </div>
+</section>
+
+<!-- Planes de Precios -->
+<section class="pricing-plans py-16 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-3 gap-8">
+      @for (plan of plans; track plan.name) {
+        <mat-card 
+          class="pricing-card relative overflow-hidden"
+          [ngClass]="{
+            'popular-plan': plan.popular,
+            'blue-card': plan.color === 'blue',
+            'green-card': plan.color === 'green',
+            'purple-card': plan.color === 'purple'
+          }">
+          
+          <!-- Badge Popular -->
+          @if (plan.popular) {
+            <div class="popular-badge absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-semibold">
+              <mat-icon class="text-sm mr-1">star</mat-icon>
+              MÁS POPULAR
+            </div>
+          }
+          
+          <mat-card-content class="p-8">
+            <!-- Header del Plan -->
+            <div class="text-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ plan.name }}</h3>
+              <div class="price-section mb-4">
+                <span class="text-4xl font-bold" [ngClass]="{
+                  'text-blue-600': plan.color === 'blue',
+                  'text-green-600': plan.color === 'green',
+                  'text-purple-600': plan.color === 'purple'
+                }">{{ plan.price }}</span>
+                @if (plan.period) {
+                  <span class="text-gray-500 ml-1">{{ plan.period }}</span>
+                }
+              </div>
+              <p class="text-gray-600 text-sm">{{ plan.description }}</p>
+            </div>
+            
+            <!-- Características -->
+            <div class="features-list mb-8">
+              <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                <mat-icon class="mr-2 text-sm">checklist</mat-icon>
+                Incluye:
+              </h4>
+              <ul class="space-y-3">
+                @for (feature of plan.features; track feature) {
+                  <li class="flex items-start">
+                    <mat-icon class="text-green-500 mr-3 mt-0.5 text-sm">check</mat-icon>
+                    <span class="text-gray-600 text-sm">{{ feature }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+            
+            <!-- Botón de Acción -->
+            <button 
+              mat-raised-button 
+              class="w-full !py-3 !text-base font-semibold"
+              [color]="plan.popular ? 'primary' : null"
+              [ngClass]="{
+                '!bg-blue-600 !text-white': plan.color === 'blue' && !plan.popular,
+                '!bg-green-600 !text-white': plan.color === 'green' && plan.popular,
+                '!bg-purple-600 !text-white': plan.color === 'purple'
+              }"
+              (click)="handlePlanAction(plan.buttonAction)">
+              {{ plan.buttonText }}
+            </button>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section py-16 px-4 bg-gray-50">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Preguntas Frecuentes</h2>
+      <p class="text-lg text-gray-600">
+        Respuestas a las preguntas más comunes sobre nuestros planes y precios.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="faq-item">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+          <mat-icon class="mr-2 text-blue-600">help_outline</mat-icon>
+          ¿Qué sucede si excedo mi límite?
+        </h3>
+        <p class="text-gray-600 text-sm">
+          Si excedes tu límite mensual, tu API seguirá funcionando pero con respuestas más lentas. 
+          Te notificaremos para que puedas actualizar tu plan.
+        </p>
+      </div>
+      
+      <div class="faq-item">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+          <mat-icon class="mr-2 text-blue-600">help_outline</mat-icon>
+          ¿Puedo cambiar de plan en cualquier momento?
+        </h3>
+        <p class="text-gray-600 text-sm">
+          Sí, puedes actualizar o degradar tu plan en cualquier momento desde tu dashboard. 
+          Los cambios se aplican inmediatamente.
+        </p>
+      </div>
+      
+      <div class="faq-item">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+          <mat-icon class="mr-2 text-blue-600">help_outline</mat-icon>
+          ¿Ofrecen descuentos anuales?
+        </h3>
+        <p class="text-gray-600 text-sm">
+          Actualmente nuestros precios son mensuales. Para volumes empresariales, 
+          contacta nuestro equipo de ventas para opciones personalizadas.
+        </p>
+      </div>
+      
+      <div class="faq-item">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+          <mat-icon class="mr-2 text-blue-600">help_outline</mat-icon>
+          ¿Cómo funciona el soporte?
+        </h3>
+        <p class="text-gray-600 text-sm">
+          El plan Developer incluye soporte comunitario vía GitHub. Los planes pagos 
+          incluyen soporte por email con tiempos de respuesta garantizados.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Final -->
+<section class="final-cta py-16 px-4 bg-gradient-to-r from-blue-600 to-indigo-700">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      ¿Necesitas algo Personalizado?
+    </h2>
+    <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+      Para volúmenes especiales, integraciones personalizadas o implementaciones on-premise, 
+      nuestro equipo puede crear una solución a medida.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button 
+        mat-raised-button 
+        class="!bg-white !text-blue-600 !text-lg !px-8 !py-3"
+        (click)="navigateToRegister()">
+        <mat-icon class="mr-2">rocket_launch</mat-icon>
+        Empezar Gratis
+      </button>
+      
+      <button 
+        mat-stroked-button 
+        class="!text-white !border-white !text-lg !px-8 !py-3">
+        <mat-icon class="mr-2">email</mat-icon>
+        Contactar Ventas
+      </button>
+    </div>
+    
+    <p class="text-blue-100 text-sm mt-4">
+      <mat-icon class="mr-1 text-sm">support_agent</mat-icon>
+      Respuesta en menos de 24 horas
+    </p>
+  </div>
+</section>

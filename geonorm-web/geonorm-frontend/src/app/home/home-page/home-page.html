@@ -1,1 +1,242 @@
-<p>home-page works!</p>
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-to-br from-blue-50 to-indigo-100 py-20 px-4">
+  <div class="max-w-6xl mx-auto text-center">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+      La API de Direcciones que tus 
+      <span class="text-blue-600">Aplicaciones Necesitan</span>
+    </h1>
+    
+    <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto">
+      Estandariza, valida y enriquece direcciones postales en Colombia con una API simple, rápida y confiable.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="!text-lg !px-8 !py-3"
+        (click)="navigateToRegister()">
+        <mat-icon class="mr-2">key</mat-icon>
+        Obtén tu API Key Gratis
+      </button>
+      
+      <button 
+        mat-stroked-button 
+        class="!text-lg !px-8 !py-3"
+        (click)="navigateToDocs()">
+        <mat-icon class="mr-2">description</mat-icon>
+        Ver Documentación
+      </button>
+    </div>
+    
+    <p class="text-sm text-gray-500">
+      <mat-icon class="text-green-500 mr-1" style="font-size: 16px;">check_circle</mat-icon>
+      No se requiere tarjeta de crédito
+    </p>
+  </div>
+</section>
+
+<!-- Demo Section -->
+<section class="demo-section py-16 px-4 bg-white">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Prueba GeoNorm API en Acción
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Escribe cualquier dirección colombiana y observa cómo la transformamos en datos estructurados y precisos.
+      </p>
+    </div>
+    
+    <mat-card class="demo-card">
+      <mat-card-content>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Panel Izquierdo - Input -->
+          <div class="input-panel">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <mat-icon class="mr-2 text-blue-600">edit_location</mat-icon>
+              Dirección de Entrada
+            </h3>
+            
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Ingresa una dirección</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="demoAddress"
+                placeholder="carrera 4 # 10-20, apto 301, Bogotá">
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+            
+            <div class="mt-4">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                [disabled]="isLoading()"
+                (click)="normalizeDemo()"
+                class="w-full !py-3">
+                @if (isLoading()) {
+                  <mat-icon class="animate-spin mr-2">refresh</mat-icon>
+                  Procesando...
+                } @else {
+                  <mat-icon class="mr-2">transform</mat-icon>
+                  Normalizar Dirección
+                }
+              </button>
+            </div>
+          </div>
+          
+          <!-- Panel Derecho - Output -->
+          <div class="output-panel">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <mat-icon class="mr-2 text-green-600">code</mat-icon>
+              Respuesta JSON
+            </h3>
+            
+            @if (demoResponse()) {
+              <div class="bg-gray-900 rounded-lg p-4 overflow-auto max-h-96">
+                <pre class="text-green-400 text-sm"><code>{{
+{
+  "input": demoResponse()!.input,
+  "normalized": demoResponse()!.normalized,
+  "components": {
+    "street_type": demoResponse()!.components.street_type,
+    "street_name": demoResponse()!.components.street_name,
+    "house_number": demoResponse()!.components.house_number,
+    "apartment": demoResponse()!.components.apartment,
+    "neighborhood": demoResponse()!.components.neighborhood,
+    "city": demoResponse()!.components.city,
+    "department": demoResponse()!.components.department,
+    "country": demoResponse()!.components.country
+  },
+  "confidence_score": demoResponse()!.confidence_score,
+  "coordinates": {
+    "latitude": demoResponse()!.coordinates?.latitude,
+    "longitude": demoResponse()!.coordinates?.longitude
+  }
+} | json
+                }}</code></pre>
+              </div>
+            } @else {
+              <div class="bg-gray-100 rounded-lg p-8 text-center">
+                <mat-icon class="text-gray-400 text-4xl mb-2">play_circle_outline</mat-icon>
+                <p class="text-gray-600">
+                  Haz clic en "Normalizar Dirección" para ver la respuesta de la API
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-16 px-4 bg-gray-50">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        ¿Por qué GeoNorm?
+      </h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        Nuestra API está diseñada para desarrolladores que necesitan datos de direcciones precisos y confiables.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Normalización Simple -->
+      <mat-card class="feature-card hover:shadow-lg transition-shadow">
+        <mat-card-content class="text-center p-6">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <mat-icon class="text-blue-600 text-2xl">auto_fix_high</mat-icon>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Normalización Simple
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Convierte direcciones caóticas en un formato estándar y limpio.
+          </p>
+          <code class="text-xs bg-gray-100 px-2 py-1 rounded">/normalize</code>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Puntaje de Confianza -->
+      <mat-card class="feature-card hover:shadow-lg transition-shadow">
+        <mat-card-content class="text-center p-6">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <mat-icon class="text-green-600 text-2xl">verified</mat-icon>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Puntaje de Confianza
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Obtén un puntaje de confianza para cada dirección procesada.
+          </p>
+          <code class="text-xs bg-gray-100 px-2 py-1 rounded">/confidence</code>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Geolocalización Precisa -->
+      <mat-card class="feature-card hover:shadow-lg transition-shadow">
+        <mat-card-content class="text-center p-6">
+          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <mat-icon class="text-purple-600 text-2xl">place</mat-icon>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Geolocalización Precisa
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Enriquece tus datos con coordenadas geográficas exactas.
+          </p>
+          <code class="text-xs bg-gray-100 px-2 py-1 rounded">/geolocate</code>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Validación Completa -->
+      <mat-card class="feature-card hover:shadow-lg transition-shadow">
+        <mat-card-content class="text-center p-6">
+          <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <mat-icon class="text-orange-600 text-2xl">fact_check</mat-icon>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Validación Completa
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Accede a un objeto de datos completo con toda la información.
+          </p>
+          <code class="text-xs bg-gray-100 px-2 py-1 rounded">/validate-full</code>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-16 px-4 bg-gradient-to-r from-blue-600 to-indigo-700">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      ¿Listo para Mejorar tus Datos de Direcciones?
+    </h2>
+    <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+      Únete a desarrolladores que ya confían en GeoNorm API para obtener direcciones precisas y confiables.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button 
+        mat-raised-button 
+        class="!bg-white !text-blue-600 !text-lg !px-8 !py-3"
+        (click)="navigateToRegister()">
+        <mat-icon class="mr-2">rocket_launch</mat-icon>
+        Comenzar Gratis
+      </button>
+      
+      <button 
+        mat-stroked-button 
+        class="!text-white !border-white !text-lg !px-8 !py-3"
+        (click)="navigateToPricing()">
+        <mat-icon class="mr-2">visibility</mat-icon>
+        Ver Precios
+      </button>
+    </div>
+  </div>
+</section>
