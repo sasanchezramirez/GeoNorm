@@ -1,0 +1,403 @@
+<!-- Layout con Sidenav -->
+<mat-sidenav-container class="docs-container">
+  <!-- Sidebar Navigation -->
+  <mat-sidenav 
+    #sidenav 
+    [opened]="isSidenavOpen()" 
+    mode="side" 
+    class="docs-sidenav">
+    
+    <div class="sidenav-header p-4">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+        <mat-icon class="mr-2 text-blue-600">description</mat-icon>
+        Documentación
+      </h3>
+      <p class="text-sm text-gray-600 mt-1">API de Normalización de Direcciones</p>
+    </div>
+
+    <mat-nav-list class="docs-nav">
+      @for (section of sections; track section.id) {
+        <mat-list-item 
+          (click)="setCurrentSection(section.id)"
+          [class.active]="currentSection() === section.id"
+          class="nav-item cursor-pointer">
+          <mat-icon matListItemIcon>{{ section.icon }}</mat-icon>
+          <span matListItemTitle>{{ section.title }}</span>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content class="docs-content">
+    <!-- Header with mobile menu button -->
+    <div class="docs-header border-b border-gray-200 p-4 bg-white sticky top-0 z-10">
+      <div class="flex items-center justify-between">
+        <button 
+          mat-icon-button 
+          (click)="toggleSidenav()"
+          class="md:hidden">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <h1 class="text-2xl font-bold text-gray-900">GeoNorm API</h1>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="navigateToRegister()">
+          <mat-icon class="mr-2">key</mat-icon>
+          Obtener API Key
+        </button>
+      </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="docs-body p-6">
+      
+      <!-- Getting Started Section -->
+      @if (currentSection() === 'getting-started') {
+        <div class="docs-section">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Comenzar con GeoNorm API</h2>
+          
+          <mat-card class="intro-card mb-8">
+            <mat-card-content class="p-6">
+              <div class="flex items-start">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <mat-icon class="text-blue-600 text-2xl">rocket_launch</mat-icon>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-900 mb-2">¡Bienvenido a GeoNorm!</h3>
+                  <p class="text-gray-600 mb-4">
+                    GeoNorm API es una solución completa para normalizar, validar y enriquecer direcciones 
+                    postales en Colombia. Con solo unas líneas de código, transforma direcciones caóticas 
+                    en datos estructurados y precisos.
+                  </p>
+                  <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="flex items-center text-green-600">
+                      <mat-icon class="mr-2 text-sm">check_circle</mat-icon>
+                      <span>Normalización automática</span>
+                    </div>
+                    <div class="flex items-center text-green-600">
+                      <mat-icon class="mr-2 text-sm">check_circle</mat-icon>
+                      <span>Geolocalización precisa</span>
+                    </div>
+                    <div class="flex items-center text-green-600">
+                      <mat-icon class="mr-2 text-sm">check_circle</mat-icon>
+                      <span>Validación con confianza</span>
+                    </div>
+                    <div class="flex items-center text-green-600">
+                      <mat-icon class="mr-2 text-sm">check_circle</mat-icon>
+                      <span>API REST simple</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="quick-start">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Inicio Rápido</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+              <mat-card class="step-card">
+                <mat-card-content class="text-center p-6">
+                  <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+                  <h4 class="font-semibold text-gray-900 mb-2">Obtén tu API Key</h4>
+                  <p class="text-gray-600 text-sm">Regístrate gratis y recibe tu clave de acceso instantáneamente.</p>
+                </mat-card-content>
+              </mat-card>
+              
+              <mat-card class="step-card">
+                <mat-card-content class="text-center p-6">
+                  <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+                  <h4 class="font-semibold text-gray-900 mb-2">Haz tu Primera Llamada</h4>
+                  <p class="text-gray-600 text-sm">Usa cualquier herramienta HTTP para probar los endpoints.</p>
+                </mat-card-content>
+              </mat-card>
+              
+              <mat-card class="step-card">
+                <mat-card-content class="text-center p-6">
+                  <div class="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+                  <h4 class="font-semibold text-gray-900 mb-2">Integra en tu App</h4>
+                  <p class="text-gray-600 text-sm">Implementa en tu aplicación usando nuestros ejemplos de código.</p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Authentication Section -->
+      @if (currentSection() === 'authentication') {
+        <div class="docs-section">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Autenticación</h2>
+          
+          <mat-card class="mb-6">
+            <mat-card-content class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <mat-icon class="mr-2 text-blue-600">key</mat-icon>
+                API Key Authentication
+              </h3>
+              
+              <p class="text-gray-600 mb-4">
+                GeoNorm API utiliza autenticación basada en API Key. Debes incluir tu clave en el header 
+                <code class="bg-gray-100 px-2 py-1 rounded">X-API-Key</code> en todas las peticiones.
+              </p>
+
+              <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                <div class="flex items-start">
+                  <mat-icon class="text-amber-600 mr-2 mt-1">warning</mat-icon>
+                  <div>
+                    <h4 class="font-medium text-amber-800">Mantén tu API Key segura</h4>
+                    <p class="text-amber-700 text-sm mt-1">
+                      No compartas tu API Key públicamente. Úsala solo en el backend o en variables de entorno seguras.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="font-semibold text-gray-900 mb-3">Ejemplo de Header</h4>
+              <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                <pre class="text-green-400"><code>X-API-Key: gn_live_1234567890abcdef...</code></pre>
+              </div>
+
+              <h4 class="font-semibold text-gray-900 mb-3">URL Base</h4>
+              <div class="bg-gray-100 rounded-lg p-3">
+                <code class="text-blue-600">https://api.geonorm.com</code>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      }
+
+      <!-- Endpoints Section -->
+      @if (currentSection() === 'endpoints') {
+        <div class="docs-section">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Endpoints de la API</h2>
+          
+          @for (endpoint of endpoints; track endpoint.id) {
+            <mat-card class="endpoint-card mb-8">
+              <mat-card-content class="p-0">
+                <!-- Endpoint Header -->
+                <div class="endpoint-header bg-gray-50 p-6 border-b">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xl font-semibold text-gray-900">{{ endpoint.name }}</h3>
+                    <div class="flex items-center gap-2">
+                      <span class="method-badge" [ngClass]="'method-' + endpoint.method.toLowerCase()">
+                        {{ endpoint.method }}
+                      </span>
+                      <code class="bg-white px-3 py-1 rounded border text-blue-600">{{ endpoint.path }}</code>
+                    </div>
+                  </div>
+                  <p class="text-gray-600">{{ endpoint.description }}</p>
+                </div>
+
+                <!-- Request/Response Examples -->
+                <div class="p-6">
+                  <mat-tab-group class="endpoint-tabs">
+                    <!-- Request Example -->
+                    <mat-tab label="Petición">
+                      <div class="tab-content pt-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Cuerpo de la Petición</h4>
+                        <div class="bg-gray-900 rounded-lg p-4 relative">
+                          <button 
+                            mat-icon-button 
+                            [cdkCopyToClipboard]="endpoint.requestExample | json"
+                            class="copy-btn absolute top-2 right-2 text-gray-400 hover:text-white">
+                            <mat-icon class="text-sm">content_copy</mat-icon>
+                          </button>
+                          <pre class="text-green-400 text-sm"><code>{{ endpoint.requestExample | json }}</code></pre>
+                        </div>
+                      </div>
+                    </mat-tab>
+
+                    <!-- Response Example -->
+                    <mat-tab label="Respuesta">
+                      <div class="tab-content pt-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Respuesta Exitosa (200)</h4>
+                        <div class="bg-gray-900 rounded-lg p-4 relative">
+                          <button 
+                            mat-icon-button 
+                            [cdkCopyToClipboard]="endpoint.responseExample | json"
+                            class="copy-btn absolute top-2 right-2 text-gray-400 hover:text-white">
+                            <mat-icon class="text-sm">content_copy</mat-icon>
+                          </button>
+                          <pre class="text-green-400 text-sm"><code>{{ endpoint.responseExample | json }}</code></pre>
+                        </div>
+                      </div>
+                    </mat-tab>
+
+                    <!-- Code Examples -->
+                    <mat-tab label="Ejemplos">
+                      <div class="tab-content pt-4">
+                        <mat-expansion-panel class="code-example mb-4">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>cURL</mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <div class="bg-gray-900 rounded-lg p-4 relative">
+                            <button 
+                              mat-icon-button 
+                              [cdkCopyToClipboard]="endpoint.curlExample"
+                              class="copy-btn absolute top-2 right-2 text-gray-400 hover:text-white">
+                              <mat-icon class="text-sm">content_copy</mat-icon>
+                            </button>
+                            <pre class="text-green-400 text-sm"><code>{{ endpoint.curlExample }}</code></pre>
+                          </div>
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="code-example mb-4">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>Python (requests)</mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <div class="bg-gray-900 rounded-lg p-4 relative">
+                            <button 
+                              mat-icon-button 
+                              [cdkCopyToClipboard]="endpoint.pythonExample"
+                              class="copy-btn absolute top-2 right-2 text-gray-400 hover:text-white">
+                              <mat-icon class="text-sm">content_copy</mat-icon>
+                            </button>
+                            <pre class="text-green-400 text-sm"><code>{{ endpoint.pythonExample }}</code></pre>
+                          </div>
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="code-example">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>TypeScript (Angular)</mat-panel-title>
+                          </mat-expansion-panel-header>
+                          <div class="bg-gray-900 rounded-lg p-4 relative">
+                            <button 
+                              mat-icon-button 
+                              [cdkCopyToClipboard]="endpoint.angularExample"
+                              class="copy-btn absolute top-2 right-2 text-gray-400 hover:text-white">
+                              <mat-icon class="text-sm">content_copy</mat-icon>
+                            </button>
+                            <pre class="text-green-400 text-sm"><code>{{ endpoint.angularExample }}</code></pre>
+                          </div>
+                        </mat-expansion-panel>
+                      </div>
+                    </mat-tab>
+                  </mat-tab-group>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+
+      <!-- Examples Section -->
+      @if (currentSection() === 'examples') {
+        <div class="docs-section">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Ejemplos de Uso</h2>
+          
+          <!-- Use Case Examples -->
+          <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <mat-card class="use-case-card">
+              <mat-card-content class="p-6">
+                <div class="flex items-start mb-4">
+                  <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <mat-icon class="text-blue-600">shopping_cart</mat-icon>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">E-commerce</h3>
+                    <p class="text-gray-600 text-sm">Valida direcciones de envío en tiempo real</p>
+                  </div>
+                </div>
+                <p class="text-gray-600 text-sm">
+                  Mejora la experiencia de checkout validando direcciones antes de procesar pedidos.
+                </p>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="use-case-card">
+              <mat-card-content class="p-6">
+                <div class="flex items-start mb-4">
+                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <mat-icon class="text-green-600">account_balance</mat-icon>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Fintech</h3>
+                    <p class="text-gray-600 text-sm">Verificación de identidad y domicilio</p>
+                  </div>
+                </div>
+                <p class="text-gray-600 text-sm">
+                  Cumple requisitos de KYC validando direcciones de clientes de manera automática.
+                </p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      }
+
+      <!-- Errors Section -->
+      @if (currentSection() === 'errors') {
+        <div class="docs-section">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Códigos de Error</h2>
+          
+          <mat-card class="mb-6">
+            <mat-card-content class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Códigos de Estado HTTP</h3>
+              
+              <div class="error-codes space-y-4">
+                <div class="error-item p-4 border rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-green-600 font-mono">200 OK</code>
+                    <span class="text-sm text-gray-500">Éxito</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">La petición fue procesada correctamente.</p>
+                </div>
+
+                <div class="error-item p-4 border rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-red-600 font-mono">400 Bad Request</code>
+                    <span class="text-sm text-gray-500">Error del cliente</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">La petición contiene parámetros inválidos o faltantes.</p>
+                </div>
+
+                <div class="error-item p-4 border rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-red-600 font-mono">401 Unauthorized</code>
+                    <span class="text-sm text-gray-500">No autorizado</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">API Key faltante o inválida.</p>
+                </div>
+
+                <div class="error-item p-4 border rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-red-600 font-mono">429 Too Many Requests</code>
+                    <span class="text-sm text-gray-500">Límite excedido</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">Has excedido el límite de peticiones de tu plan.</p>
+                </div>
+
+                <div class="error-item p-4 border rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-red-600 font-mono">500 Internal Server Error</code>
+                    <span class="text-sm text-gray-500">Error del servidor</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">Error interno del servidor. Intenta nuevamente más tarde.</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card>
+            <mat-card-content class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Formato de Respuesta de Error</h3>
+              <div class="bg-gray-900 rounded-lg p-4">
+                <pre class="text-red-400 text-sm"><code>{{
+{
+  "error": {
+    "code": "INVALID_ADDRESS",
+    "message": "La dirección proporcionada no pudo ser procesada",
+    "details": "El formato de la dirección no es reconocible"
+  }
+} | json
+                }}</code></pre>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      }
+
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

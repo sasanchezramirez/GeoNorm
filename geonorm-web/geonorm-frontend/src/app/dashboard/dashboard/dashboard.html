@@ -1,0 +1,410 @@
+<!-- Dashboard Header -->
+<div class="dashboard-header bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <p class="text-gray-600">Bienvenido, {{ user().name }}</p>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <mat-chip-set>
+        <mat-chip class="plan-chip" [ngClass]="'plan-' + user().plan.toLowerCase()">
+          {{ user().plan }}
+        </mat-chip>
+      </mat-chip-set>
+      
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Perfil</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard Content -->
+<div class="dashboard-content p-6 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Stats Overview -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+      <!-- Usage Card -->
+      <mat-card class="stats-card">
+        <mat-card-content class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Uso de API</h3>
+              <p class="text-3xl font-bold" [ngClass]="getUsageColor() === 'warn' ? 'text-red-600' : 'text-blue-600'">
+                {{ apiUsage().current | number }}
+              </p>
+              <p class="text-sm text-gray-600">de {{ apiUsage().limit | number }} este {{ apiUsage().period }}</p>
+            </div>
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <mat-icon class="text-blue-600 text-2xl">analytics</mat-icon>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span>{{ getUsagePercentage() }}% usado</span>
+              <span class="text-gray-500">{{ apiUsage().limit - apiUsage().current | number }} restantes</span>
+            </div>
+            <mat-progress-bar 
+              [value]="getUsagePercentage()" 
+              [color]="getUsageColor()">
+            </mat-progress-bar>
+          </div>
+          
+          @if (getUsagePercentage() > 80) {
+            <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div class="flex items-start">
+                <mat-icon class="text-amber-600 mr-2 mt-0.5 text-sm">warning</mat-icon>
+                <div>
+                  <p class="text-amber-800 text-sm font-medium">Límite Próximo</p>
+                  <p class="text-amber-700 text-xs">Considera actualizar tu plan</p>
+                </div>
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- API Keys Card -->
+      <mat-card class="stats-card">
+        <mat-card-content class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">API Keys</h3>
+              <p class="text-3xl font-bold text-green-600">{{ apiKeys().length }}</p>
+              <p class="text-sm text-gray-600">claves activas</p>
+            </div>
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <mat-icon class="text-green-600 text-2xl">vpn_key</mat-icon>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            @for (key of apiKeys().slice(0, 2); track key.id) {
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">{{ key.name }}</span>
+                <mat-chip 
+                  class="status-chip" 
+                  [ngClass]="key.status === 'active' ? 'status-active' : 'status-inactive'">
+                  {{ key.status === 'active' ? 'Activa' : 'Inactiva' }}
+                </mat-chip>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Plan Card -->
+      <mat-card class="stats-card">
+        <mat-card-content class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Plan Actual</h3>
+              <p class="text-3xl font-bold text-purple-600">{{ user().plan }}</p>
+              <p class="text-sm text-gray-600">Suscripción activa</p>
+            </div>
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
+              <mat-icon class="text-purple-600 text-2xl">workspace_premium</mat-icon>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <button 
+              mat-stroked-button 
+              class="w-full"
+              (click)="navigateToPricing()">
+              <mat-icon class="mr-2">upgrade</mat-icon>
+              Actualizar Plan
+            </button>
+            
+            <button 
+              mat-button 
+              class="w-full text-sm"
+              (click)="manageSubscription()">
+              <mat-icon class="mr-2">settings</mat-icon>
+              Gestionar Suscripción
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <mat-card class="main-content-card">
+      <mat-tab-group class="dashboard-tabs" dynamicHeight>
+        
+        <!-- API Keys Tab -->
+        <mat-tab label="API Keys">
+          <div class="tab-content p-6">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900">Gestión de API Keys</h3>
+                <p class="text-gray-600">Administra tus claves de acceso a la API</p>
+              </div>
+              <button mat-raised-button color="primary">
+                <mat-icon class="mr-2">add</mat-icon>
+                Nueva API Key
+              </button>
+            </div>
+            
+            <div class="space-y-4">
+              @for (key of apiKeys(); track key.id) {
+                <mat-card class="api-key-card">
+                  <mat-card-content class="p-6">
+                    <div class="flex items-start justify-between">
+                      <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                          <h4 class="text-lg font-semibold text-gray-900">{{ key.name }}</h4>
+                          <mat-chip 
+                            class="status-chip" 
+                            [ngClass]="key.status === 'active' ? 'status-active' : 'status-inactive'">
+                            {{ key.status === 'active' ? 'Activa' : 'Inactiva' }}
+                          </mat-chip>
+                        </div>
+                        
+                        <div class="key-display bg-gray-900 rounded-lg p-4 mb-4">
+                          <div class="flex items-center justify-between">
+                            <code class="text-green-400 font-mono text-sm">
+                              {{ isKeyVisible()[key.id] ? key.key : getMaskedKey(key.key) }}
+                            </code>
+                            
+                            <div class="flex gap-2">
+                              <button 
+                                mat-icon-button 
+                                (click)="toggleKeyVisibility(key.id)"
+                                class="text-gray-400 hover:text-white">
+                                <mat-icon class="text-sm">
+                                  {{ isKeyVisible()[key.id] ? 'visibility_off' : 'visibility' }}
+                                </mat-icon>
+                              </button>
+                              
+                              <button 
+                                mat-icon-button 
+                                [cdkCopyToClipboard]="key.key"
+                                class="text-gray-400 hover:text-white">
+                                <mat-icon class="text-sm">content_copy</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="key-info grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                          <div>
+                            <span class="font-medium">Creada:</span> {{ formatDate(key.created) }}
+                          </div>
+                          <div>
+                            <span class="font-medium">Último uso:</span> 
+                            {{ key.lastUsed ? formatDateTime(key.lastUsed) : 'Nunca' }}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="flex flex-col gap-2 ml-6">
+                        <button 
+                          mat-stroked-button 
+                          color="primary"
+                          (click)="regenerateKey(key.id)">
+                          <mat-icon class="mr-2">refresh</mat-icon>
+                          Regenerar
+                        </button>
+                        
+                        <button 
+                          mat-stroked-button 
+                          color="warn"
+                          (click)="revokeKey(key.id)">
+                          <mat-icon class="mr-2">block</mat-icon>
+                          Revocar
+                        </button>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Usage Analytics Tab -->
+        <mat-tab label="Analíticas">
+          <div class="tab-content p-6">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">Uso de la API</h3>
+              <p class="text-gray-600">Estadísticas detalladas de uso por endpoint</p>
+            </div>
+            
+            <mat-table [dataSource]="usageLogs()" class="usage-table">
+              <ng-container matColumnDef="date">
+                <mat-header-cell *matHeaderCellDef>Fecha</mat-header-cell>
+                <mat-cell *matCellDef="let log">{{ formatDate(log.date) }}</mat-cell>
+              </ng-container>
+              
+              <ng-container matColumnDef="endpoint">
+                <mat-header-cell *matHeaderCellDef>Endpoint</mat-header-cell>
+                <mat-cell *matCellDef="let log">
+                  <code class="bg-gray-100 px-2 py-1 rounded text-sm">{{ log.endpoint }}</code>
+                </mat-cell>
+              </ng-container>
+              
+              <ng-container matColumnDef="requests">
+                <mat-header-cell *matHeaderCellDef>Peticiones</mat-header-cell>
+                <mat-cell *matCellDef="let log">
+                  <span class="font-semibold">{{ log.requests | number }}</span>
+                </mat-cell>
+              </ng-container>
+              
+              <ng-container matColumnDef="responseTime">
+                <mat-header-cell *matHeaderCellDef>Tiempo Promedio</mat-header-cell>
+                <mat-cell *matCellDef="let log">
+                  <span class="text-sm">{{ log.responseTime }}ms</span>
+                </mat-cell>
+              </ng-container>
+              
+              <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+                <mat-cell *matCellDef="let log">
+                  <mat-chip 
+                    class="status-chip" 
+                    [ngClass]="log.status === 200 ? 'status-success' : 'status-error'">
+                    {{ log.status }}
+                  </mat-chip>
+                </mat-cell>
+              </ng-container>
+              
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            
+            @if (usageLogs().length === 0) {
+              <div class="empty-state text-center py-12">
+                <mat-icon class="text-gray-400 text-6xl mb-4">timeline</mat-icon>
+                <h4 class="text-lg font-medium text-gray-900 mb-2">No hay datos de uso</h4>
+                <p class="text-gray-600">Las estadísticas aparecerán cuando empieces a usar la API</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Settings Tab -->
+        <mat-tab label="Configuración">
+          <div class="tab-content p-6">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">Configuración de Cuenta</h3>
+              <p class="text-gray-600">Administra tu cuenta y preferencias</p>
+            </div>
+            
+            <div class="space-y-6">
+              <!-- Account Info -->
+              <mat-card class="settings-card">
+                <mat-card-content class="p-6">
+                  <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <mat-icon class="mr-2 text-blue-600">person</mat-icon>
+                    Información Personal
+                  </h4>
+                  
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                      <p class="text-gray-900">{{ user().name }}</p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <p class="text-gray-900">{{ user().email }}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4">
+                    <button mat-stroked-button>
+                      <mat-icon class="mr-2">edit</mat-icon>
+                      Editar Información
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+              
+              <!-- Billing -->
+              <mat-card class="settings-card">
+                <mat-card-content class="p-6">
+                  <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <mat-icon class="mr-2 text-green-600">payment</mat-icon>
+                    Facturación
+                  </h4>
+                  
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="font-medium text-gray-900">Plan {{ user().plan }}</p>
+                      <p class="text-sm text-gray-600">Próxima facturación: 15 Feb 2024</p>
+                    </div>
+                    
+                    <div class="space-x-2">
+                      <button mat-stroked-button (click)="navigateToPricing()">
+                        <mat-icon class="mr-2">upgrade</mat-icon>
+                        Cambiar Plan
+                      </button>
+                      
+                      <button mat-button (click)="manageSubscription()">
+                        <mat-icon class="mr-2">receipt_long</mat-icon>
+                        Ver Facturas
+                      </button>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+              
+              <!-- Security -->
+              <mat-card class="settings-card">
+                <mat-card-content class="p-6">
+                  <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <mat-icon class="mr-2 text-red-600">security</mat-icon>
+                    Seguridad
+                  </h4>
+                  
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="font-medium text-gray-900">Contraseña</p>
+                        <p class="text-sm text-gray-600">Última actualización hace 30 días</p>
+                      </div>
+                      <button mat-stroked-button>
+                        <mat-icon class="mr-2">lock_reset</mat-icon>
+                        Cambiar Contraseña
+                      </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="font-medium text-gray-900">Autenticación de dos factores</p>
+                        <p class="text-sm text-gray-600">Protege tu cuenta con 2FA</p>
+                      </div>
+                      <button mat-stroked-button>
+                        <mat-icon class="mr-2">shield</mat-icon>
+                        Configurar 2FA
+                      </button>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>

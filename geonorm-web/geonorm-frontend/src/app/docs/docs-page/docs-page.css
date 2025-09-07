@@ -1,0 +1,285 @@
+/* Estilos para la página de documentación */
+.docs-container {
+  height: 100vh;
+  background-color: #fafafa;
+}
+
+.docs-sidenav {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+}
+
+.sidenav-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.docs-nav .nav-item {
+  border-radius: 8px;
+  margin: 4px 16px;
+  transition: background-color 0.2s ease;
+}
+
+.docs-nav .nav-item:hover {
+  background-color: #f3f4f6;
+}
+
+.docs-nav .nav-item.active {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.docs-nav .nav-item.active mat-icon {
+  color: #1d4ed8 !important;
+}
+
+.docs-content {
+  background-color: #fafafa;
+}
+
+.docs-header {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.docs-body {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card styles */
+.intro-card, .endpoint-card, .step-card, .use-case-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.step-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Endpoint specific styles */
+.endpoint-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.method-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.method-post {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.method-get {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.method-put {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.method-delete {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+/* Tab styles */
+.endpoint-tabs {
+  margin-top: 0;
+}
+
+.endpoint-tabs .mat-mdc-tab-group {
+  background: transparent;
+}
+
+.tab-content {
+  min-height: 200px;
+}
+
+/* Code blocks */
+pre {
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+}
+
+/* Copy button */
+.copy-btn {
+  background: rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.copy-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+
+div:hover .copy-btn {
+  opacity: 0.7;
+}
+
+/* Expansion panels */
+.code-example {
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+}
+
+.code-example .mat-expansion-panel-header {
+  background: #f9fafb;
+}
+
+/* Error items */
+.error-item {
+  border: 1px solid #e5e7eb;
+  transition: border-color 0.2s ease;
+}
+
+.error-item:hover {
+  border-color: #3b82f6;
+}
+
+/* Use case cards */
+.use-case-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.use-case-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .docs-sidenav {
+    width: 100%;
+  }
+  
+  .docs-body {
+    padding: 1rem;
+  }
+  
+  .endpoint-header {
+    padding: 1rem !important;
+  }
+  
+  .endpoint-header .flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .method-badge {
+    align-self: flex-start;
+  }
+  
+  pre {
+    font-size: 12px;
+  }
+  
+  .step-card mat-card-content {
+    padding: 1rem !important;
+  }
+}
+
+/* Scrollbar customization */
+.docs-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.docs-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.docs-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.docs-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Animation improvements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.docs-section {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Focus improvements for accessibility */
+.nav-item:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.copy-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Syntax highlighting improvements */
+.text-green-400 {
+  color: #4ade80 !important;
+}
+
+.text-red-400 {
+  color: #f87171 !important;
+}
+
+/* Material overrides */
+.mat-mdc-list-item {
+  --mdc-list-list-item-container-height: 48px !important;
+}
+
+.mat-mdc-tab-group {
+  --mat-tab-header-inactive-label-text-color: #6b7280;
+  --mat-tab-header-active-label-text-color: #1d4ed8;
+}
+
+/* Custom scrollbar for code blocks */
+pre::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

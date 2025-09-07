@@ -1,0 +1,3 @@
+[submodule "geo-norm-forge"]
+	path = geo-norm-forge
+	url = https://github.com/sasanchezramirez/geo-norm-forge.git
